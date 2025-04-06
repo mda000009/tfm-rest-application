@@ -7,6 +7,7 @@ import com.isia.tfm.model.*;
 import com.isia.tfm.repository.ApplicationUserRepository;
 import com.isia.tfm.service.UserManagementService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +19,17 @@ import java.util.Objects;
 @Service
 public class UserManagementServiceImpl implements UserManagementService {
 
-    ObjectMapper objectMapper;
+    private final ObjectMapper objectMapperFailOnUnknown;
+    private final ObjectMapper objectMapperIgnoreUnknown;
     PasswordEncoder passwordEncoder;
     ApplicationUserRepository applicationUserRepository;
 
-    public UserManagementServiceImpl(ObjectMapper objectMapper,
+    public UserManagementServiceImpl(@Qualifier("objectMapperFailOnUnknown") ObjectMapper objectMapperFailOnUnknown,
+                                     @Qualifier("objectMapperIgnoreUnknown") ObjectMapper objectMapperIgnoreUnknown,
                                      PasswordEncoder passwordEncoder,
                                      ApplicationUserRepository applicationUserRepository) {
-        this.objectMapper = objectMapper;
+        this.objectMapperFailOnUnknown = objectMapperFailOnUnknown;
+        this.objectMapperIgnoreUnknown = objectMapperIgnoreUnknown;
         this.passwordEncoder = passwordEncoder;
         this.applicationUserRepository = applicationUserRepository;
     }
@@ -37,7 +41,7 @@ public class UserManagementServiceImpl implements UserManagementService {
         log.debug("Username and email checked");
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        ApplicationUserEntity applicationUserEntity = objectMapper.convertValue(user, ApplicationUserEntity.class);
+        ApplicationUserEntity applicationUserEntity = objectMapperFailOnUnknown.convertValue(user, ApplicationUserEntity.class);
         applicationUserEntity.setCreationDate(LocalDateTime.now());
 
         applicationUserEntity = applicationUserRepository.save(applicationUserEntity);
@@ -72,17 +76,24 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     @Override
     public GetUsersByGender200Response getUsersByGender(String gender) {
+        validateGender(gender);
         GetUsersByGender200Response getUsersByGender200Response = new GetUsersByGender200Response();
 
         List<ApplicationUserEntity> applicationUserEntityList = applicationUserRepository.findByGender(gender);
 
         List<ReturnUser> data = applicationUserEntityList.stream()
-                .map(entity -> objectMapper.convertValue(entity, ReturnUser.class))
+                .map(entity -> objectMapperIgnoreUnknown.convertValue(entity, ReturnUser.class))
                 .toList();
 
         getUsersByGender200Response.setData(data);
 
         return getUsersByGender200Response;
+    }
+
+    private void validateGender(String gender) {
+        if (gender != null && !gender.isEmpty() && !gender.equals("Male") && !gender.equals("Female") && !gender.equals("Another")) {
+            throw new CustomException("400", "Bad Request", "Gender param must be Male, Female or Another");
+        }
     }
 
 }

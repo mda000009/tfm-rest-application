@@ -19,6 +19,3 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     database-platform: org.hibernate.dialect.MySQLDialect
     show-sql: true
-  jackson:
-    deserialization:
-      fail-on-unknown-properties: true
