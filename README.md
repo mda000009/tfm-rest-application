@@ -9,7 +9,7 @@ To run the project locally, the prerequisites detailed in the "Prerequisites" se
 - Linux or macOS: ./mvnw spring-boot:run
 
 ## Usage
-Once the project is running locally, you can send requests to any API endpoint. You can use the [Postman collections](https://1drv.ms/u/c/34367cf4eb5bef5e/EZ5liB5ZdHNNrbvcSQNGy1UBuahdveazxtj0ng5wYZW2HA?e=lBwnfE). You can also make requests to the endpoints via [Swagger Editor](https://editor.swagger.io/) using the file "tfm-rest-application/src/main/resources/swagger/tfm-rest-application-v1.yml".  
+Once the project is running locally, you can send requests to any API endpoint. You can use the [Postman collections](https://1drv.ms/u/c/34367cf4eb5bef5e/EULVVGxw3O9BpuO9QIHEH3oB8FKT99zUZdJPv-CDvEY_yQ?e=qDFkMW). You can also make requests to the endpoints via [Swagger Editor](https://editor.swagger.io/) using the file "tfm-rest-application/src/main/resources/swagger/tfm-rest-application-v1.yml".  
 
 ## Contribution
 To contribute to the project, please contact us via the email provided in the "Contact" section.  
