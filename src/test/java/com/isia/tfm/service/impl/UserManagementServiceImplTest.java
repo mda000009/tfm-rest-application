@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -36,7 +37,11 @@ class UserManagementServiceImplTest {
     @InjectMocks
     private UserManagementServiceImpl userManagementServiceImpl;
     @Mock
-    private ObjectMapper objectMapper;
+    @Qualifier("objectMapperFailOnUnknown")
+    private ObjectMapper objectMapperFailOnUnknown;
+    @Mock
+    @Qualifier("objectMapperIgnoreUnknown")
+    private ObjectMapper objectMapperIgnoreUnknown;
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
@@ -45,6 +50,13 @@ class UserManagementServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        userManagementServiceImpl = new UserManagementServiceImpl(
+                objectMapperFailOnUnknown,
+                objectMapperIgnoreUnknown,
+                passwordEncoder,
+                applicationUserRepository
+        );
     }
 
     @Test
@@ -55,7 +67,7 @@ class UserManagementServiceImplTest {
                 user.getPhoneNumber(), LocalDateTime.now());
 
         when(passwordEncoder.encode(anyString())).thenReturn("example");
-        when(objectMapper.convertValue(user, ApplicationUserEntity.class))
+        when(objectMapperFailOnUnknown.convertValue(user, ApplicationUserEntity.class))
                 .thenReturn(applicationUserEntity);
         when(applicationUserRepository.findAll()).thenReturn(new ArrayList<>());
         when(applicationUserRepository.save(any(ApplicationUserEntity.class))).thenReturn(applicationUserEntity);
