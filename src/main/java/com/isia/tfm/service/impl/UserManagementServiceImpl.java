@@ -1,7 +1,7 @@
 package com.isia.tfm.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.isia.tfm.entity.ApplicationUserEntity;
+import com.isia.tfm.model.entity.ApplicationUserEntity;
 import com.isia.tfm.exception.CustomException;
 import com.isia.tfm.model.*;
 import com.isia.tfm.repository.ApplicationUserRepository;
